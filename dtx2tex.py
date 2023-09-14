@@ -8,7 +8,7 @@ import re
 documentclass_pattern = re.compile(r'^\\documentclass(\[.+\])?\{\w+?\}')
 begindocument_pattern = re.compile(r'\\begin\{document\}')
 enddocument_pattern   = re.compile(r'\\end\{document\}')
-comment_start_pattern = re.compile(r'^%?[ ]*(.*)')
+comment_start_pattern = re.compile(r'^%[ ]?(.*)')
 macrocode_pattern     = re.compile(r'^%[ ]{4}(\\(begin|end))\{macrocode\}')
 flag_pattern          = re.compile(r'\<(\*|\/)\w+\>')
 endinput_pattern      = re.compile(r'^(% )?\\endinput')
@@ -81,17 +81,25 @@ with open(f'{dtx_file_name}.tex', 'w') as f:
     for number in range(fi_line_numbers[i]+1, iffalse_line_numbers[i+1]):
       if (flag_pattern.search(lines[number]) != None): # delete the flag line
         ()
-      elif (macrocode_pattern.search(lines[number]) == None): # remove the beginning comment character
-        f.write(comment_start_pattern.sub(r'\1', lines[number]))
-      else: # change the macrocode environment into verbatim environment
+      elif (macrocode_pattern.search(lines[number]) != None): 
+        # change the macrocode environment into verbatim environment
         f.write(macrocode_pattern.sub(r'\1{verbatim}', lines[number]))
+      elif (comment_start_pattern.search(lines[number]) != None):
+        # remove the beginning comment character
+        f.write(comment_start_pattern.sub(r'\1', lines[number]))
+      else:
+        f.write(lines[number])
   for number in range(fi_line_numbers[iffalse_fi_pairs_number - 1] + 1, endinput_line_number):
-    if (flag_pattern.search(lines[number]) != None): # delete the flag line
-      ()
-    elif (macrocode_pattern.search(lines[number]) == None): # remove the beginning comment character
-      f.write(comment_start_pattern.sub(r'\1', lines[number]))
-    else: #  change the macrocode environment into verbatim environment
-      f.write(macrocode_pattern.sub(r'\1{verbatim}', lines[number]))
+      if (flag_pattern.search(lines[number]) != None): # delete the flag line
+        ()
+      elif (macrocode_pattern.search(lines[number]) != None): 
+        # change the macrocode environment into verbatim environment
+        f.write(macrocode_pattern.sub(r'\1{verbatim}', lines[number]))
+      elif (comment_start_pattern.search(lines[number]) != None):
+        # remove the beginning comment character
+        f.write(comment_start_pattern.sub(r'\1', lines[number]))
+      else:
+        f.write(lines[number])
   # write lines between \DocInput (excluded) and \end{document} (included)
   for number in range(docinput_line_number+1, enddocument_line_number+1): 
     f.write(lines[number])
