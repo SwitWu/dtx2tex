@@ -52,12 +52,12 @@ for number in range(len(lines)-1, 0, -1):
   if (endinput_pattern.search(lines[number]) != None):
     endinput_line_number = number
 
-# get all line numbers pairing of '% \iffalse' (with optional ' meta-comment') and '% \fi'
+# get all line numbers of pairing '% \iffalse' (with optional ' meta-comment') and '% \fi'
 for number in range(endinput_line_number):
   if(iffalse_pattern.search(lines[number]) != None):
     iffalse_line_numbers.append(number)
   # note the second condition, this is because there might exist some \fi corresponding to
-  # other type \if... conditions
+  # other type \if... conditionals
   if((fi_pattern.search(lines[number]) != None) & (len(fi_line_numbers) < len(iffalse_line_numbers))):
     fi_line_numbers.append(number)
 iffalse_fi_pairs_number = len(iffalse_line_numbers)
